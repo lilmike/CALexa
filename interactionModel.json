@@ -1,0 +1,165 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "calexa",
+            "intents": [
+                {
+                    "name": "GetEventsIntent",
+                    "slots": [
+                        {
+                            "name": "date",
+                            "type": "AMAZON.DATE"
+                        },
+                        {
+                            "name": "endDate",
+                            "type": "AMAZON.DATE"
+                        },
+                        {
+                            "name": "eventSynonyms",
+                            "type": "LIST_OF_EVENT_SYNONYMS"
+                        },
+                        {
+                            "name": "calendarSynonyms",
+                            "type": "LIST_OF_CALENDAR_SYNONYMS"
+                        }
+                    ],
+                    "samples": [
+                        "GetEventsIntent Welche Termine habe ich zwischen dem {date} und dem {endDate}",
+                        "GetEventsIntent Was habe ich für {eventSynonyms}",
+                        "GetEventsIntent Was habe ich am {date} für {eventSynonyms} im {calendarSynonyms}",
+                        "GetEventsIntent Was habe ich am {date} für {eventSynonyms}",
+                        "GetEventsIntent Was habe ich für {eventSynonyms} {date}",
+                        "GetEventsIntent Was habe ich {date} für {eventSynonyms}",
+                        "GetEventsIntent Gib mir die Ereignisse für {date}",
+                        "GetEventsIntent Gib mir die {eventSynonyms} für {date}",
+                        "GetEventsIntent Gib mir die {eventSynonyms} {date}",
+                        "GetEventsIntent Was ist {date} auf dem {calendarSynonyms}",
+                        "GetEventsIntent Was ist auf dem {calendarSynonyms}",
+                        "GetEventsIntent Welche {eventSynonyms} stehen im {calendarSynonyms} zwischen dem {date} und dem {endDate} ",
+                        "GetEventsIntent Welche {eventSynonyms} stehen im {calendarSynonyms} zwischen dem {date} und dem {endDate} an",
+                        "GetEventsIntent Welche {eventSynonyms} stehen zwischen dem {date} und dem {endDate} an",
+                        "GetEventsIntent Welche {eventSynonyms} stehen {date} an",
+                        "GetEventsIntent Welche {eventSynonyms} ich vom {date} bis zum {endDate} auf dem {calendarSynonyms} habe",
+                        "GetEventsIntent Welche {eventSynonyms} ich habe ",
+                        "GetEventsIntent Welche {eventSynonyms} ich am {date} habe ",
+                        "GetEventsIntent Welche {eventSynonyms} ich am {date} auf dem {calendarSynonyms} habe ",
+                        "GetEventsIntent nach meinen {eventSynonyms} vom {date} zum {endDate}",
+                        "GetEventsIntent nach meinen {eventSynonyms} vom {date} bis zum {endDate} ",
+                        "GetEventsIntent nach meinen {eventSynonyms} zwischen {date} und {endDate}",
+                        "GetEventsIntent nach meinen {eventSynonyms}",
+                        "GetEventsIntent Welche {eventSynonyms} habe ich {date}",
+                        "GetEventsIntent Welche {eventSynonyms} habe ich am {date} ",
+                        "GetEventsIntent Welche {eventSynonyms} habe ich am {date} auf dem {calendarSynonyms}"
+                    ]
+                },
+                {
+                    "name": "SetEventIntent",
+                    "slots": [
+                        {
+                            "name": "date",
+                            "type": "AMAZON.DATE"
+                        },
+                        {
+                            "name": "time",
+                            "type": "AMAZON.TIME"
+                        },
+                        {
+                            "name": "duration",
+                            "type": "AMAZON.DURATION"
+                        },
+                        {
+                            "name": "endDate",
+                            "type": "AMAZON.DATE"
+                        },
+                        {
+                            "name": "eventSynonyms",
+                            "type": "LIST_OF_EVENT_SYNONYMS"
+                        },
+                        {
+                            "name": "calendarSynonyms",
+                            "type": "LIST_OF_CALENDAR_SYNONYMS"
+                        },
+                        {
+                            "name": "eventtype",
+                            "type": "LIST_OF_EVENT_TYPES"
+                        }
+                    ],
+                    "samples": [
+                        "SetEventIntent einen {eventtype} um {time} einzutragen",
+                        "SetEventIntent ein {eventtype} für den {date} um {time} anzusetzen",
+                        "SetEventIntent ein {eventtype} für den {date} um {time} über {duration} einzurichten",
+                        "SetEventIntent einen {eventtype} für den {date} um {time} von {duration} anzusetzen",
+                        "SetEventIntent ein {eventtype} für den {date} um {time} für {duration} einzurichten",
+                        "SetEventIntent einen neuen Termin {eventtype} für den {date} um {time} für {duration} hinzuzufügen",
+                        "SetEventIntent einen neuen Termin {eventtype} für den {date} um {time} für {duration} anzulegen"
+                    ]
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                }
+            ],
+            "types": [
+                {
+                    "name": "LIST_OF_EVENT_SYNONYMS",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "Termin",
+                                "synonyms": [
+                                    "Abmachung",
+                                    "Verabredung",
+                                    "Event",
+                                    "Ereignis"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "LIST_OF_CALENDAR_SYNONYMS",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "Kalender",
+                                "synonyms": [
+                                    "Agenda",
+                                    "Terminplaner"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "LIST_OF_EVENT_TYPES",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "Besprechung",
+                                "synonyms": [
+                                    "Party",
+                                    "Festival",
+                                    "Veranstaltung",
+                                    "Vortrag",
+                                    "Treffen",
+                                    "Meeting",
+                                    "Lehre",
+                                    "Vorlesung",
+                                    "Arzttermin"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

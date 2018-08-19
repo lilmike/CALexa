@@ -37,7 +37,7 @@ Your service will now be available via https://yourdomain/calexa/
 
 ## Configuration via Alexa Skills Kit <i class="icon-cog"></i>
 
-The configuration process is straigt forward, as known by other skills.
+The configuration process is straight forward, as known by other skills.
 
 
 #### Intent Schema
@@ -62,7 +62,7 @@ Agenda
 ```
 
 #### Sample Utterances:
-Copy the content of the [Sample Utterance file](https://github.com/martin-riedl/CALexa/blob/master/speech_assets/SampleUtterances_DE.txt) to the Sample Utterances field of the Interaction Model tab while using the Alexa Skills Kit for configuration.
+Copy the content of the [Interaction Model definition](https://github.com/nikolauskrismer/CALexa/blob/master/interactionModel.json) to the Interaction Model while using the [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) for configuration.
 
 
 

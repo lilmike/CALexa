@@ -1,0 +1,6 @@
+{
+	"calexaPort": 5000,
+	"url" : "https://yourcaldavurl",
+	"username" : "yourusername",
+	"password" : "yourpassword"
+}
