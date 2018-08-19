@@ -8,6 +8,7 @@ from ics import Calendar
 from flask import Flask
 from flask_ask import Ask, statement
 from datetime import timedelta
+import tzlocal
 
 app = Flask(__name__)
 ask = Ask(app, '/')
@@ -22,6 +23,7 @@ def log(msg):
 #	global f
 #	f.write(msg)
 #	f.flush()
+	print(msg)
 
 def connectCalendar():
 	global config
@@ -96,8 +98,8 @@ def getDateEvents(date, enddate):
 
 	return statement(speech_text).simple_card('Kalendertermine', speech_text)
 
-# We do have a major problem here. There is no timezone information in the date/time objects...
-# ... we assume UTC, but most likely this will be wrong. So if created events are off by some hour(s)
+# We do have a minor problem here. There is no timezone information in the date/time objects...
+# ... we assume the server's timezone, but it could be that this is wrong. So if created events are off by some hour(s)
 # this is the reason. If someone wants to provide a simple PR then this would be great :-)
 @ask.intent('SetEventIntent', convert={'date': 'date', 'time':'time', 'duration' : 'timedelta'})
 def setEvent(date, time, duration, eventtype, location):
@@ -121,9 +123,9 @@ def setEvent(date, time, duration, eventtype, location):
 
 		d = datetime.combine(date,time)
 
-		creationDate = datetime.now().strftime("%Y%m%dT%H%M%SZ")
-		startDate = d.strftime("%Y%m%dT%H%M%SZ")
-		endDate = (d + duration).strftime("%Y%m%dT%H%M%SZ")
+		creationDate = datetime.now(tzlocal.get_localzone()).strftime("%Y%m%dT%H%M%S")
+		startDate = d.strftime("%Y%m%dT%H%M%S")
+		endDate = (d + duration).strftime("%Y%m%dT%H%M%S")
 
 		log("  startDate: " + str(startDate) + "\n")
 		log("  endDate: " + str(endDate) + "\n")
