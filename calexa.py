@@ -1,13 +1,15 @@
+import re
 import pprint
 import json
 from datetime import datetime
+from datetime import timedelta
 import caldav
 import urllib3
 from caldav.elements import dav, cdav
+from calendar import monthrange
 from ics import Calendar
 from flask import Flask
-from flask_ask import Ask, statement
-from datetime import timedelta
+from flask_ask import Ask, statement, request
 
 app = Flask(__name__)
 ask = Ask(app, '/')
@@ -33,6 +35,18 @@ def connectCalendar():
 
 	return sorted(calendars,key=lambda calendar: str(calendar.url))
 
+# split away TRIGGER and VALARM fields, since caldav library does not always parse them correctly
+def filterEventTriggers(events):
+	for r in events:
+		ev = "";
+		ev_data = str(r._data).splitlines()
+		for line in ev_data:
+			if not line.lstrip().startswith("TRIGGER") and ":VALARM" not in line:
+				ev += (line + '\n')
+		r._data = ev
+
+	return events
+
 def getCalDavEvents(begin, end):
 	calendars = connectCalendar()
 	speech_text = ""
@@ -52,22 +66,24 @@ def getCalDavEvents(begin, end):
 
 			log("  -> " + str(len(results)) + " Termine \n")
 			if len(results) > 0:
+				results	= filterEventTriggers(results)
 				eventList = eventList + flatten([Calendar(event._data).events for event in results])
 			i = i + 1
 
 		if (len(eventList) <= 0):
 			speech_text = "Es sind keine Termine eingetragen"
 		else:
+			log("  returning " + str(len(eventList)) + " event(s)\n")
 			sortedEventList = sorted(eventList,key=lambda icsEvent: icsEvent.begin)
 
 #			pp = pprint.PrettyPrinter(indent=4)
 #			pp.pprint(sortedEventList)
 
-			speech_text = "<speak>\n"
-			speech_text += '  Es sind folgende Termine auf dem Kalender:\n'
+			speech_text += '<speak>\n'
+			speech_text += '    Es sind folgende Termine auf dem Kalender:\n'
 			for icsEvent in sortedEventList:
-				speech_text += '  <break time="1s"/> ' + icsEvent.begin.humanize(locale='de') + " ist " + icsEvent.name + '.\n'
-			speech_text += "</speak>"
+				speech_text += '    <break time="1s"/>' + icsEvent.begin.humanize(locale='de') + ' ist ' + getEventName(icsEvent) + '\n'
+			speech_text += '</speak>'
 
 	return speech_text
 
@@ -86,10 +102,10 @@ def getDateEvents(date, enddate):
 	# in case that default "enddate" does not comply to "date",
 	# the enddate is set to end of the day of "date"
 	if date==None:
-		date=datetime.now()
+		date = datetime.now()
 
 	if enddate==None or date>=enddate:
-		enddate = datetime(date.year, date.month, date.day + 1)
+		enddate = getEndDate(date, request.intent.slots.date.value)
 
 	log("  date: " + str(date) + "\n")
 	log("  endDate: " + str(enddate) + "\n")
@@ -98,6 +114,34 @@ def getDateEvents(date, enddate):
 	log("  text: " + speech_text + "\n")
 
 	return statement(speech_text).simple_card('Kalendertermine', speech_text)
+
+def getEndDate(date, orig_date):
+	log("  orig_date: " + str(orig_date) + " " + str(type(orig_date)) + "\n")
+	orig_date = re.sub('X$', '0', orig_date)
+	if re.match('^\d{4}-W\d{2}$', orig_date):
+		# this week
+		endDate = date + timedelta(days=7)
+	elif re.match('\d{4}-W\d{2}-WE$', orig_date):
+		# this weekend
+		endDate = date + timedelta(days=2)
+	elif re.match('^\d{4}-\d{2}$', orig_date):
+		# this month
+		last_day = monthRange(date.year, date.month)
+		endDate = dateTime.date(date.year, date.month, last_day)
+	elif re.match('^\d{4}$', orig_date):
+		# this/next year
+		endDate = dateTime.date(date.year, 12, 31)
+	else:
+		endDate = datetime(date.year, date.month, date.day + 1)
+
+	return endDate
+
+def getEventName(event):
+	# see: https://stackoverflow.com/que	stions/40135637/error-unable-to-parse-the-provided-ssml-the-provided-text-is-not-valid-ssml
+	name = event.name
+	name = name.replace('&', ' und ')
+	name = name.replace('*', '')
+	return name
 
 # We do have a minor problem here. There is no timezone information in the date/time objects...
 # ... we assume the server's timezone, but it could be that this is wrong. So if created events are off by some hour(s)
@@ -150,7 +194,7 @@ def setEvent(date, time, duration, eventtype, location):
 		log("ERROR: " + speech_text + "\n")
 	else:
 		# This could be sooo much easier if we had something like "if (calendar.isReadOnly())"
-		i = 0;
+		i = 0
 		log("  gefundene Kalender: #" + str(len(calendars)) + "\n")
 		for calendar in calendars:
 			log("  [" + str(i + 1) + "]: " + str(calendar) + "\n")
