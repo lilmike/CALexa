@@ -19,14 +19,21 @@
                             "type": "LIST_OF_EVENT_SYNONYMS"
                         },
                         {
+                            "name": "dateArticle",
+                            "type": "LIST_OF_DATE_ARTICLES"
+                        },
+                        {
+                            "name": "eventArticle",
+                            "type": "LIST_OF_EVENT_ARTICLES"
+                        },
+                        {
                             "name": "calendarSynonyms",
                             "type": "LIST_OF_CALENDAR_SYNONYMS"
                         }
                     ],
                     "samples": [
                         "GetEventsIntent Welche {eventSynonyms} habe ich",
-                        "GetEventsIntent Welche {eventSynonyms} habe ich {date}",
-                        "GetEventsIntent Welche {eventSynonyms} habe ich am {date}",
+                        "GetEventsIntent Welche {eventSynonyms} habe ich {dateArticle} {date}",
                         "GetEventsIntent Welche {eventSynonyms} habe ich am {date} auf dem {calendarSynonyms}",
                         "GetEventsIntent Welche {eventSynonyms} habe ich zwischen dem {date} und dem {endDate}",
                         "GetEventsIntent Welche {eventSynonyms} habe ich vom {date} bis zum {endDate} auf dem {calendarSynonyms}",
@@ -42,13 +49,13 @@
                         "GetEventsIntent Was ist am {date} auf dem {calendarSynonyms}",
                         "GetEventsIntent Was ist {date} auf dem {calendarSynonyms}",
                         "GetEventsIntent Was ist auf dem {calendarSynonyms}",
-                        "GetEventsIntent Gib mir die {eventSynonyms} für {date}",
-                        "GetEventsIntent Gib mir die {eventSynonyms} {date}",
-                        "GetEventsIntent nach meinen {eventSynonyms} von {date} bis {endDate}",
-                        "GetEventsIntent nach meinen {eventSynonyms} vom {date} zum {endDate}",
-                        "GetEventsIntent nach meinen {eventSynonyms} vom {date} bis zum {endDate} ",
-                        "GetEventsIntent nach meinen {eventSynonyms} zwischen {date} und {endDate}",
-                        "GetEventsIntent nach meinen {eventSynonyms}"
+                        "GetEventsIntent Gib mir {eventArticle} {eventSynonyms} {dateArticle} {date}",
+                        "GetEventsIntent nach {eventArticle} {eventSynonyms} {dateArticle} {date}",
+                        "GetEventsIntent nach {eventArticle} {eventSynonyms} von {date} bis {endDate}",
+                        "GetEventsIntent nach {eventArticle} {eventSynonyms} vom {date} zum {endDate}",
+                        "GetEventsIntent nach {eventArticle} {eventSynonyms} vom {date} bis zum {endDate} ",
+                        "GetEventsIntent nach {eventArticle} {eventSynonyms} zwischen {date} und {endDate}",
+                        "GetEventsIntent nach {eventArticle} {eventSynonyms}"
                     ]
                 },
                 {
@@ -108,22 +115,6 @@
             ],
             "types": [
                 {
-                    "name": "LIST_OF_EVENT_SYNONYMS",
-                    "values": [
-                        {
-                            "name": {
-                                "value": "Termin",
-                                "synonyms": [
-                                    "Abmachung",
-                                    "Verabredung",
-                                    "Event",
-                                    "Ereignis"
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
                     "name": "LIST_OF_CALENDAR_SYNONYMS",
                     "values": [
                         {
@@ -132,6 +123,61 @@
                                 "synonyms": [
                                     "Agenda",
                                     "Terminplaner"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "LIST_OF_DATE_ARTICLES",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "am",
+                                "synonyms": [
+                                    "des",
+                                    "der",
+                                    "für",
+                                    "vom",
+                                    ""
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "LIST_OF_EVENT_SYNONYMS",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "Termin",
+                                "synonyms": [
+                                    "Terminen",
+                                    "Termine",
+                                    "Abmachung",
+                                    "Abmachungen",
+                                    "Verabredung",
+                                    "Verabredungen",
+                                    "Event",
+                                    "Events",
+                                    "Ereignis",
+                                    "Ereignissen"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "LIST_OF_EVENT_ARTICLES",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "meinen",
+                                "synonyms": [
+                                    "die",
+                                    "den",
+                                    "allen",
+                                    ""
                                 ]
                             }
                         }
