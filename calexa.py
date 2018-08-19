@@ -4,23 +4,24 @@ from datetime import datetime
 import caldav
 import urllib3
 from caldav.elements import dav, cdav
-
 from ics import Calendar
-
 from flask import Flask
 from flask_ask import Ask, statement
-
 from datetime import timedelta
+
 app = Flask(__name__)
 ask = Ask(app, '/')
-
-# open log files
-#f = open('./log/calexa.log', 'a')
-#fe = open('./log/calexa_error.log', 'a')
 
 # read configuration
 with open('./config.json') as json_data_file:
 	config = json.load(json_data_file)
+
+# open log files
+#f = open('./calexa.log', 'a+')
+def log(msg):
+#	global f
+#	f.write(msg)
+#	f.flush()
 
 def connectCalendar():
 	global config
@@ -30,25 +31,23 @@ def connectCalendar():
 	return principal.calendars()
 
 def getCalDavEvents(begin, end):
-#	global f, fe
 	calendars = connectCalendar()
 	speech_text = ""
 
 	if (len(calendars) <= 0):
 		speech_text = "  ich konnte mich leider nicht mit dem Kalender verbinden\n"
-#		fe.write(speech_text)
-#		fe.flush()
+		log("ERROR: " + speech_text)
 	else:
 		eventList = []
 		flatten = lambda l: [item for sublist in l for item in sublist]
 
-#		f.write("  gefundene Kalender: " + str(len(calendars)) + "\n")
+		log("  gefundene Kalender: " + str(len(calendars)) + "\n")
 		i = 0
 		for calendar in calendars:
-#			f.write("	[" + str(i + 1) + "]: " + str(calendar))
+			log("	[" + str(i + 1) + "]: " + str(calendar))
 			results = calendar.date_search(begin, end)
 
-#			f.write("  -> " + str(len(results)) + " Termine \n")
+			log("  -> " + str(len(results)) + " Termine \n")
 			if len(results) > 0:
 				eventList = eventList + flatten([Calendar(event._data).events for event in results])
 			i = i + 1
@@ -77,11 +76,9 @@ def getCalDavEvents(begin, end):
 
 @ask.intent('GetEventsIntent', convert={ 'date': 'date', 'enddate': 'date' })
 def getDateEvents(date, enddate):
-#	global f, fe
-
-#	f.write("Reading events!\n")
-#	f.write("  date (from user): " + str(date) + " " + str(type(date)) + "\n")
-#	f.write("  enddate (from user): " + str(enddate) + " " + str(type(enddate)) + "\n")
+	log("Reading events!\n")
+	log("  date (from user): " + str(date) + " " + str(type(date)) + "\n")
+	log("  enddate (from user): " + str(enddate) + " " + str(type(enddate)) + "\n")
 
 	# in case that default "enddate" does not comply to "date",
 	# the enddate is set to end of the day of "date"
@@ -91,26 +88,31 @@ def getDateEvents(date, enddate):
 	if enddate==None or date>=enddate:
 		enddate = datetime(date.year, date.month, date.day+1)
 
-#	f.write("  date: " + str(date) + "\n")
-#	f.write("  endDate: " + str(enddate) + "\n")
+	log("  date: " + str(date) + "\n")
+	log("  endDate: " + str(enddate) + "\n")
 
 	speech_text = getCalDavEvents(date, enddate)
-#	f.write("  text: " + speech_text + "\n")
-#	f.flush()
+	log("  text: " + speech_text + "\n")
 
 	return statement(speech_text).simple_card('Kalendertermine', speech_text)
 
+# We do have a major problem here. There is no timezone information in the date/time objects...
+# ... we assume UTC, but most likely this will be wrong. So if created events are off by some hour(s)
+# this is the reason. If someone wants to provide a simple PR then this would be great :-)
 @ask.intent('SetEventIntent', convert={'date': 'date', 'time':'time', 'duration' : 'timedelta'})
 def setEvent(date, time, duration, eventtype, location):
-#	global f, fe
-
-#	f.write("Creating net event!\n");
-#	f.write("  date: " + date + "\n")
-#	f.write("  time: " + time + "\n")
-#	f.write("  duration: " + duration + "\n")
+	log("Creating event!\n");
+	log("  date (from user): " + str(date) + "\n")
+	log("  time (from user): " + str(time) + "\n")
+	log("  duration (from user): " + str(duration) + "\n")
+	log("  eventtype (from user): " + str(eventtype) + "\n")
+	log("  location (from user): " + str(location) + "\n")
 	speech_text = "Termin konnte nicht eingetragen werden!"
 
 	try:
+		if eventtype==None:
+			eventtype='Besprechung'
+
 		if date==None:
 			date = datetime.today()
 
@@ -122,6 +124,9 @@ def setEvent(date, time, duration, eventtype, location):
 		creationDate = datetime.now().strftime("%Y%m%dT%H%M%SZ")
 		startDate = d.strftime("%Y%m%dT%H%M%SZ")
 		endDate = (d + duration).strftime("%Y%m%dT%H%M%SZ")
+
+		log("  startDate: " + str(startDate) + "\n")
+		log("  endDate: " + str(endDate) + "\n")
 
 		vcal = "BEGIN:VCALENDAR"+"\n"
 		vcal += "VERSION:2.0"+"\n"
@@ -135,7 +140,7 @@ def setEvent(date, time, duration, eventtype, location):
 		vcal += "END:VEVENT"+"\n"
 		vcal += "END:VCALENDAR"
 
-#		f.write("  entry: " + vcal + "\n")
+		log("  entry: " + vcal + "\n")
 
 		calendars = connectCalendar()
 
@@ -145,12 +150,10 @@ def setEvent(date, time, duration, eventtype, location):
 			speech_text = "Termin wurde eingetragen!"
 
 	except TypeError as te:
-#		fe.write("  error: " + te + "\n")
-#		fe.flush()
+		log("ERROR: " + str(te) + "\n")
 		pass
 
-#	f.write("  text: " + speech_text + "\n")
-#	f.flush()
+	log("  text: " + speech_text + "\n")
 
 	return statement(speech_text).simple_card('Kalendertermine', speech_text)
 
