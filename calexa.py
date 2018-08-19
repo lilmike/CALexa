@@ -8,7 +8,6 @@ from ics import Calendar
 from flask import Flask
 from flask_ask import Ask, statement
 from datetime import timedelta
-import tzlocal
 
 app = Flask(__name__)
 ask = Ask(app, '/')
@@ -30,7 +29,9 @@ def connectCalendar():
 
 	client = caldav.DAVClient(config["url"], username=config["username"], password=config["password"])
 	principal = client.principal()
-	return principal.calendars()
+	calendars = principal.calendars()
+
+	return sorted(calendars,key=lambda calendar: str(calendar.url))
 
 def getCalDavEvents(begin, end):
 	calendars = connectCalendar()
@@ -88,7 +89,7 @@ def getDateEvents(date, enddate):
 		date=datetime.now()
 
 	if enddate==None or date>=enddate:
-		enddate = datetime(date.year, date.month, date.day+1)
+		enddate = datetime(date.year, date.month, date.day + 1)
 
 	log("  date: " + str(date) + "\n")
 	log("  endDate: " + str(enddate) + "\n")
@@ -111,52 +112,66 @@ def setEvent(date, time, duration, eventtype, location):
 	log("  location (from user): " + str(location) + "\n")
 	speech_text = "Termin konnte nicht eingetragen werden!"
 
-	try:
-		if eventtype==None:
-			eventtype='Besprechung'
+	if eventtype==None:
+		eventtype='Besprechung'
 
-		if date==None:
-			date = datetime.today()
+	if date==None:
+		date = datetime.today()
 
-		if duration==None:
-			duration = timedelta(hours=1)
+	if duration==None:
+		duration = timedelta(hours=1)
 
-		d = datetime.combine(date,time)
+	d = datetime.combine(date,time)
 
-		creationDate = datetime.now(tzlocal.get_localzone()).strftime("%Y%m%dT%H%M%S")
-		startDate = d.strftime("%Y%m%dT%H%M%S")
-		endDate = (d + duration).strftime("%Y%m%dT%H%M%S")
+	creationDate = datetime.now().strftime("%Y%m%dT%H%M%S")
+	startDate = d.strftime("%Y%m%dT%H%M%S")
+	endDate = (d + duration).strftime("%Y%m%dT%H%M%S")
 
-		log("  startDate: " + str(startDate) + "\n")
-		log("  endDate: " + str(endDate) + "\n")
+	log("  startDate: " + str(startDate) + "\n")
+	log("  endDate: " + str(endDate) + "\n")
 
-		vcal = "BEGIN:VCALENDAR"+"\n"
-		vcal += "VERSION:2.0"+"\n"
-		vcal += "PRODID:-//Example Corp.//CalDAV Client//EN"+"\n"
-		vcal += "BEGIN:VEVENT"+"\n"
-		vcal += "UID:1234567890"+"\n"
-		vcal += "DTSTAMP:" + creationDate +"\n"
-		vcal += "DTSTART:" + startDate +"\n"
-		vcal += "DTEND:" + endDate +"\n"
-		vcal += "SUMMARY:" + eventtype + "\n"
-		vcal += "END:VEVENT"+"\n"
-		vcal += "END:VCALENDAR"
+	vcal = "BEGIN:VCALENDAR"+"\n"
+	vcal += "VERSION:2.0"+"\n"
+	vcal += "PRODID:-//Example Corp.//CalDAV Client//EN"+"\n"
+	vcal += "BEGIN:VEVENT"+"\n"
+	vcal += "UID:1234567890"+"\n"
+	vcal += "DTSTAMP:" + creationDate +"\n"
+	vcal += "DTSTART:" + startDate +"\n"
+	vcal += "DTEND:" + endDate +"\n"
+	vcal += "SUMMARY:" + eventtype + "\n"
+	vcal += "END:VEVENT"+"\n"
+	vcal += "END:VCALENDAR"
 
-		log("  entry: " + vcal + "\n")
+	log("  entry: " + vcal + "\n")
 
-		calendars = connectCalendar()
+	calendars = connectCalendar()
+	if (len(calendars) <= 0):
+		speech_text = "Ich konnte mich leider nicht mit dem Kalender verbinden"
+		log("ERROR: " + speech_text + "\n")
+	else:
+		# This could be sooo much easier if we had something like "if (calendar.isReadOnly())"
+		i = 0;
+		log("  gefundene Kalender: #" + str(len(calendars)) + "\n")
+		for calendar in calendars:
+			log("  [" + str(i + 1) + "]: " + str(calendar) + "\n")
+			try:
+				event = calendar.add_event(vcal)
+				speech_text = "Termin wurde eingetragen!"
 
-		if len(calendars) > 0:
-			calendar = calendars[0]
-			event = calendar.add_event(vcal)
-			speech_text = "Termin wurde eingetragen!"
-
-	except TypeError as te:
-		log("ERROR: " + str(te) + "\n")
-		pass
+				# Everything worked out well and event has been entered into one calendar -> we do not have to try other calendars and therefore skip the loop
+				break
+			except Exception as te:
+				if (i >= len(calendars)):
+					speech_text = "Ich konnte in keinen Kalender schreiben"
+					log("ERROR: " + speech_text + "\n")
+					log("ERROR: " + str(te) + "\n")
+					pass
+				else:
+					log("  konnte nicht in Kalender schreiben: " + str(calendar) + ". Versuche nächsten Kalender...\n")
+					# Try using the next calendar... we will fail when the event could not be added to any calendar
+					i = i + 1
 
 	log("  text: " + speech_text + "\n")
-
 	return statement(speech_text).simple_card('Kalendertermine', speech_text)
 
 #print getTodayEvents()
