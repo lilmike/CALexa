@@ -32,6 +32,12 @@
                         }
                     ],
                     "samples": [
+                        "GetEventsIntent English What is on {calendarSynonyms}",
+                        "GetEventsIntent English What {eventSynonyms} is on {calendarSynonyms}",
+                        "GetEventsIntent English What is happening {date}",
+                        "GetEventsIntent English What is happening {dateArticle} {date}",
+                        "GetEventsIntent English Do I have anything from {date} to {endDate}",
+                        "GetEventsIntent English Do I have anything from {date} to {endDate} on {calendarSynonyms}",
                         "GetEventsIntent Welche {eventSynonyms} habe ich",
                         "GetEventsIntent Welche {eventSynonyms} habe ich {dateArticle} {date}",
                         "GetEventsIntent Welche {eventSynonyms} habe ich am {date} auf dem {calendarSynonyms}",
@@ -88,9 +94,44 @@
                         {
                             "name": "eventtype",
                             "type": "LIST_OF_EVENT_TYPES"
+                        },
+                        {
+                            "name": "dateArticle",
+                            "type": "LIST_OF_DATE_ARTICLES"
+                        },
+                        {
+                            "name": "eventArticle",
+                            "type": "LIST_OF_EVENT_ARTICLES"
                         }
                     ],
                     "samples": [
+                        "SetEventIntent English Add {eventArticle} {eventtype} to {calendarSynonyms}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} to {calendarSynonyms} {date}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} to {calendarSynonyms} {date} at {time}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} to {calendarSynonyms} {date} at {time} lasting {duration}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} to {calendarSynonyms} from {date} through {endDate}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} to {calendarSynonyms} from {date} to {endDate}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} on {date} to {calendarSynonyms}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} on {date} at {time} to {calendarSynonyms}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} on {date} at {time} lasting {duration} to {calendarSynonyms}",
+                        "SetEventIntent English add to {calendarSynonyms}",
+                        "SetEventIntent English Add {eventArticle} {eventtype}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} on {date}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} on {date} at {time}",
+                        "SetEventIntent English Add {eventArticle} {eventtype} on {date} at {time} lasting {duration}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} to {calendarSynonyms}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} to {calendarSynonyms} {date}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} to {calendarSynonyms} {date} at {time}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} to {calendarSynonyms} {date} at {time} lasting {duration}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} to {calendarSynonyms} from {date} through {endDate}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} to {calendarSynonyms} from {date} to {endDate}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} on {date} to {calendarSynonyms}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} on {date} at {time} to {calendarSynonyms}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} on {date} at {time} lasting {duration} to {calendarSynonyms}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} for {eventtype}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} on {date} for {eventtype}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} on {date} at {time} for {eventtype}",
+                        "SetEventIntent English Add {eventArticle} {eventSynonyms} on {date} at {time} lasting {duration} for {eventtype}",
                         "SetEventIntent einen {eventtype} um {time} einzutragen",
                         "SetEventIntent ein {eventtype} für den {date} um {time} anzusetzen",
                         "SetEventIntent ein {eventtype} für den {date} um {time} über {duration} einzurichten",
@@ -125,6 +166,18 @@
                                     "Terminplaner"
                                 ]
                             }
+                        },
+                        {
+                            "name": {
+                                "value": "Calendar",
+                                "synonyms": [
+                                    "Schedule",
+                                    "my Calendar",
+                                    "my Schedule",
+                                    "our Calendar",
+                                    "our Schedule"
+                                ]
+                            }
                         }
                     ]
                 },
@@ -138,8 +191,18 @@
                                     "des",
                                     "der",
                                     "für",
-                                    "vom",
-                                    ""
+                                    "vom"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "from",
+                                "synonyms": [
+                                    "until",
+                                    "to",
+                                    "on",
+                                    "for"
                                 ]
                             }
                         }
@@ -164,6 +227,23 @@
                                     "Ereignissen"
                                 ]
                             }
+                        },
+                        {
+                            "name": {
+                                "value": "Event",
+                                "synonyms": [
+                                    "Appointment",
+                                    "Slot",
+                                    "Meeting",
+                                    "Time",
+                                    "Events",
+                                    "Appointments",
+                                    "Slots",
+                                    "Meetings",
+                                    "Occasion",
+                                    "Occasions"
+                                ]
+                            }
                         }
                     ]
                 },
@@ -176,8 +256,17 @@
                                 "synonyms": [
                                     "die",
                                     "den",
-                                    "allen",
-                                    ""
+                                    "allen"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "the",
+                                "synonyms": [
+                                    "an",
+                                    "a",
+                                    "some"
                                 ]
                             }
                         }
@@ -199,6 +288,18 @@
                                     "Lehre",
                                     "Vorlesung",
                                     "Arzttermin"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Visit",
+                                "synonyms": [
+                                    "Party",
+                                    "Festival",
+                                    "Lecture",
+                                    "Class",
+                                    "Doctor"
                                 ]
                             }
                         }
