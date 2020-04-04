@@ -211,7 +211,7 @@ def setEvent(date, time, duration, eventtype, location):
 					log("ERROR: " + str(te) + "\n")
 					pass
 				else:
-					log("  Couldn't write to calendar: " + str(calendar) + ". Versuche nächsten Kalender...\n")
+					log("  Couldn't write to calendar: " + str(calendar) + ". Try the next calendar...\n")
 					# Try using the next calendar... we will fail when the event could not be added to any calendar
 					i = i + 1
 
